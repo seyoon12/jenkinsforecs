@@ -8,8 +8,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Git 자격 증명을 사용하여 코드를 체크아웃합니다.
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/seyoon12/product_ci_eks', credentialsId: 'product_ci_sshkey']]])
+                // Git 리포지토리에 SSH 키를 사용하여 코드를 체크아웃합니다.
+                sshagent(credentials: ['product_ci_aws-credentials']) {
+                    sh 'git clone git@github.com:seyoon12/product_ci_eks.git'
             }
         }
         stage('Build and Push Image') {
