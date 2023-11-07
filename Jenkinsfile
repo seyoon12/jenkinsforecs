@@ -6,9 +6,6 @@ pipeline {
     }
     agent any
     stages {
-        stage('GitHub Repository Clone') { 
-        }
-    }
         stage('Build and Push Image') {
             steps {
                 container('kaniko') {
