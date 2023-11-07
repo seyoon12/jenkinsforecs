@@ -8,28 +8,22 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Git 리포지토리에 Git Credentials를 사용하여 코드를 체크아웃합니다.
-                checkout([$class: 'GitSCM', 
-                          branches: [[name: '*/main']], 
-                          doGenerateSubmoduleConfigurations: false, 
-                          extensions: [[$class: 'CloneOption', 
-                                        noTags: false, 
-                                        shallow: true, 
-                                        timeout: 2]], 
-                          submoduleCfg: [], 
-                          userRemoteConfigs: [[credentialsId: 'git-credentials', 
-                                              url: 'https://github.com/seyoon12/product_ci_eks.git']]])
+                // Git 리포지토리에서 코드를 체크아웃합니다.
+                checkout scm
             }
         }
-        stage('Build and Push Image') {
+        stage('Build and push image with Kaniko') {
             steps {
-                container('kaniko') {
-                    sh '''
-                        /kaniko/executor \
-                        --dockerfile=https://github.com/seyoon12/product_ci_eks/Dockerfile \
-                        --context=./product_ci_eks \
-                        --destination=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
-                    '''
+                // AWS 자격 증명을 설정합니다. 'aws-credentials'는 Jenkins 내에 설정된 자격증명 ID입니다.
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'product_ci_aws-credentials']]) {
+                    // Kaniko executor를 사용하여 이미지를 빌드하고 ECR에 푸시합니다.
+                    sh """
+                    /kaniko/executor \
+                      --context ${env.WORKSPACE} \
+                      --dockerfile ${env.WORKSPACE}/Dockerfile \
+                      --destination ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} \
+                      --destination ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
+                    """
                 }
             }
         }
