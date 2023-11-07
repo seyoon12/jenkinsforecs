@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     // YAML 파일을 사용하여 Kaniko Pod 생성
-                    sh 'kubectl apply -f kal.yml -n product-ci'
+                    sh 'kubectl apply -f kalico.yml -n product-ci'
                     // Pod가 완료될 때까지 기다림
                     sh "kubectl wait --for=condition=complete --namespace=product-ci pod/kaniko"
                     // Pod 로그를 출력
