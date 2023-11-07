@@ -10,7 +10,7 @@ pipeline {
             steps {
                 // Git 리포지토리에 SSH 키를 사용하여 코드를 체크아웃합니다.
                 script {
-                    sshagent(credentials: ['product_ci_aws-credentials']) {
+                    sshagent(credentials: ['git-ssh-key']) {
                         sh 'git clone git@github.com:seyoon12/product_ci_eks.git'
                     }
                 }
