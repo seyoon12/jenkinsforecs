@@ -51,15 +51,12 @@ spec:
             }
         }
     }
-    post {
-        always {
-          script {
-            // 파이프라인이 끝나면 Kaniko Pod를 정리합니다.
-                if (currentBuild.result != 'SUCCESS') {
-                    echo 'Cleaning up Kaniko pod...'
-                    kubernetesDeletePod(name: 'kaniko', namespace: 'product-ci')
+post {
+    always {
+        script {
+            echo 'Cleaning up Kaniko pod...'
+            kubernetesDeletePod(name: 'kaniko', namespace: 'product-ci')
         }
     }
-}
 }
 }
