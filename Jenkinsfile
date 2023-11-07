@@ -49,12 +49,7 @@ spec:
 
                     // kubectl을 사용하여 Kaniko Pod 생성
                     sh "kubectl create -f kaniko-pod.yaml"
-                    // 생성된 Pod 이름을 가져옴
-                    def podName = sh(script: "kubectl get pods -l job-name=kaniko-job -o jsonpath='{.items[0].metadata.name}'", returnStdout: true).trim()
-                    // Kaniko Pod이 성공적으로 완료될 때까지 대기
-                    sh "kubectl wait --for=condition=complete --timeout=600s pod ${podName} -n product-ci"
-                    // 로그를 확인할 수 있도록 Kaniko Pod의 로그를 출력
-                    sh "kubectl logs ${podName} -n product-ci"
+ 
                 }
             }
         }
