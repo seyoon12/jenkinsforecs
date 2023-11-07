@@ -1,10 +1,10 @@
 pipeline {
-    agent any // Jenkins 마스터 노드에서 실행하지 않고, 어느 에이전트에서든 실행 가능
+    agent any
     environment {
         // 환경 변수 설정
         ECR_REGISTRY = "535597585675.dkr.ecr.ap-northeast-2.amazonaws.com"
         IMAGE_NAME = "product_ci"
-        TAG = "latest" // 또는 파라미터나 버전으로부터 동적으로 생성
+        TAG = "latest"
     }
     stages {
         stage('Checkout code') {
@@ -15,8 +15,8 @@ pipeline {
         stage('Build and push Docker image with Kaniko') {
             steps {
                 script {
-                    // 직접 Kaniko Pod를 생성하고, 이미지를 빌드 및 푸시
-                    def kanikoPod = '''
+                    // Kaniko Pod 정의
+                    def kanikoPod = """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -42,14 +42,19 @@ spec:
           name: github
           key: username
   restartPolicy: Never
-'''
+"""
+
+                    // Kaniko Pod YAML을 파일로 저장
+                    writeFile file: 'kaniko-pod.yaml', text: kanikoPod
 
                     // kubectl을 사용하여 Kaniko Pod 생성
-                    sh "echo '${kanikoPod}' | kubectl apply -f -"
+                    sh "kubectl create -f kaniko-pod.yaml"
+                    // 생성된 Pod 이름을 가져옴
+                    def podName = sh(script: "kubectl get pods -l job-name=kaniko-job -o jsonpath='{.items[0].metadata.name}'", returnStdout: true).trim()
                     // Kaniko Pod이 성공적으로 완료될 때까지 대기
-                    sh "kubectl wait --for=condition=complete --timeout=600s pod -l generateName=kaniko- -n product-ci"
+                    sh "kubectl wait --for=condition=complete --timeout=600s pod ${podName} -n product-ci"
                     // 로그를 확인할 수 있도록 Kaniko Pod의 로그를 출력
-                    sh "kubectl logs --selector=generateName=kaniko- -n product-ci"
+                    sh "kubectl logs ${podName} -n product-ci"
                 }
             }
         }
