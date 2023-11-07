@@ -12,18 +12,15 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Build and push image with Kaniko') {
+        stage('Build and Push Image') {
             steps {
-                // AWS 자격 증명을 설정합니다. 'aws-credentials'는 Jenkins 내에 설정된 자격증명 ID입니다.
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'product_ci_aws-credentials']]) {
-                    // Kaniko executor를 사용하여 이미지를 빌드하고 ECR에 푸시합니다.
-                    sh """
-                    /kaniko/executor \
-                      --context ${env.WORKSPACE} \
-                      --dockerfile ${env.WORKSPACE}/Dockerfile \
-                      --destination ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} \
-                      --destination ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
-                    """
+                container('kaniko') {
+                    sh '''
+                        /kaniko/executor \
+                        --dockerfile=https://github.com/seyoon12/product_ci_eks/Dockerfile \
+                        --context=https://github.com/seyoon12/product_ci_eks \
+                        --destination=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+                    '''
                 }
             }
         }
