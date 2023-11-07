@@ -43,18 +43,21 @@ spec:
           key: username
   restartPolicy: Never
 ''') {
-                        // Pod가 완료될 때까지 기다립니다.
                         container('kaniko') {
+                            // Kaniko 컨테이너 안에서 실행할 스크립트를 추가하세요
+                            // 예: sh "echo Building and pushing image"
                         }
                     }
                 }
             }
         }
     }
-post {
-    script {
-        echo 'Cleaning up Kaniko pod...'
-          kubernetesDeletePod(name: 'kaniko', namespace: 'product-ci')
+    post {
+        always {
+            script {
+                echo 'Cleaning up Kaniko pod...'
+                kubernetesDeletePod(name: 'kaniko', namespace: 'product-ci')
+            }
         }
     }
 }
