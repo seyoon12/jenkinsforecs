@@ -52,11 +52,9 @@ spec:
         }
     }
 post {
-    always {
-        script {
-            echo 'Cleaning up Kaniko pod...'
-            kubernetesDeletePod(name: 'kaniko', namespace: 'product-ci')
+    script {
+        echo 'Cleaning up Kaniko pod...'
+          kubernetesDeletePod(name: 'kaniko', namespace: 'product-ci')
         }
     }
-}
 }
