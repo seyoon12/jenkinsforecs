@@ -1,41 +1,30 @@
 pipeline {
+    agent none // Jenkins 마스터 노드에서 실행
     environment {
+        // 환경 변수 설정
         ECR_REGISTRY = "535597585675.dkr.ecr.ap-northeast-2.amazonaws.com"
-        ECR_REPOSITORY = "product_ci"
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
+        IMAGE_NAME = "product_ci"
+        TAG = "latest" // 또는 파라미터나 버전으로부터 동적으로 생성
     }
-    agent any
     stages {
-        stage('Checkout') {
+        stage('Checkout code') {
             steps {
-                // Git 리포지토리에서 코드를 체크아웃합니다.
                 checkout scm
             }
         }
-        stage('Build and push image with Kaniko') {
+        stage('Build and push Docker image with Kaniko') {
             steps {
-                // AWS 자격 증명을 설정합니다. 'aws-credentials'는 Jenkins 내에 설정된 자격증명 ID입니다.
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'product_ci_aws-credentials']]) {
-                    // Kaniko executor를 사용하여 이미지를 빌드하고 ECR에 푸시합니다.
-                    sh """
-                    /kaniko/executor \
-                      --context https://github.com/seyoon12/product_ci_eks \
-                      --dockerfile https://github.com/seyoon12/product_ci_eks/Dockerfile \
-                      --destination ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} \
-                      --destination ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
-                    """
+                script {
+                    // YAML 파일을 사용하여 Kaniko Pod 생성
+                    sh 'kubectl apply -f kal.yml -n product-ci'
+                    // Pod가 완료될 때까지 기다림
+                    sh "kubectl wait --for=condition=complete --namespace=product-ci pod/kaniko"
+                    // Pod 로그를 출력
+                    sh "kubectl logs --namespace=product-ci kaniko"
+                    // 사용이 끝난 후 Pod 제거
+                    sh "kubectl delete pod kaniko --namespace=product-ci"
                 }
             }
-        }
-    }
-    post {
-        success {
-            // 성공적으로 빌드가 완료되면 실행됩니다.
-            echo 'Image build and push successful'
-        }
-        failure {
-            // 빌드 실패 시 실행됩니다.
-            echo 'Image build or push failed'
         }
     }
 }
