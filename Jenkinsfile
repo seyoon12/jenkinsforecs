@@ -45,10 +45,6 @@ spec:
 ''') {
                         // Pod가 완료될 때까지 기다립니다.
                         container('kaniko') {
-                            // 빌드 및 푸시 프로세스 실행
-                            sh "kubectl wait --for=condition=complete --namespace=product-ci pod/kaniko --timeout=600s"
-                            sh "kubectl logs --namespace=product-ci kaniko"
-                            sh "kubectl delete pod kaniko --namespace=product-ci"
                         }
                     }
                 }
@@ -58,7 +54,9 @@ spec:
     post {
         always {
             // 파이프라인이 끝나면 Kaniko Pod를 정리합니다.
-            sh "kubectl delete pod kaniko --namespace=product-ci --ignore-not-found"
+                if (currentBuild.result != 'SUCCESS') {
+                    echo 'Cleaning up Kaniko pod...'
+                    kubernetesDeletePod(name: 'kaniko', namespace: 'product-ci')
         }
     }
 }
