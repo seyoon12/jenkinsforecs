@@ -6,13 +6,21 @@ pipeline {
     }
     agent any
     stages {
+        stage('Checkout') {
+            steps {
+                // Git 리포지토리에 SSH 키를 사용하여 코드를 체크아웃합니다.
+                sshagent(credentials: ['git_ci_ssh']) {
+                    sh 'git clone git@github.com:seyoon12/product_ci_eks.git'
+                }
+            }
+        }
         stage('Build and Push Image') {
             steps {
                 container('kaniko') {
                     sh '''
                         /kaniko/executor \
                         --dockerfile=https://github.com/seyoon12/product_ci_eks/Dockerfile \
-                        --context=https://github.com/seyoon12/product_ci_eks \
+                        --context=./product_ci_eks \
                         --destination=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
                     '''
                 }
