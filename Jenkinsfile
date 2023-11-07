@@ -19,8 +19,8 @@ pipeline {
                     // Kaniko executor를 사용하여 이미지를 빌드하고 ECR에 푸시합니다.
                     sh """
                     /kaniko/executor \
-                      --context ${env.WORKSPACE} \
-                      --dockerfile ${env.WORKSPACE}/Dockerfile \
+                      --context https://github.com/seyoon12/product_ci_eks \
+                      --dockerfile https://github.com/seyoon12/product_ci_eks/Dockerfile \
                       --destination ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG} \
                       --destination ${ECR_REGISTRY}/${ECR_REPOSITORY}:latest
                     """
