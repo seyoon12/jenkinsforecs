@@ -1,5 +1,5 @@
 pipeline {
-    agent product-ci // Jenkins 마스터 노드에서 실행
+    agent { label 'product-ci' } // Jenkins 마스터 노드에서 실행
     environment {
         // 환경 변수 설정
         ECR_REGISTRY = "535597585675.dkr.ecr.ap-northeast-2.amazonaws.com"
