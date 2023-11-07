@@ -9,22 +9,56 @@ pipeline {
     stages {
         stage('Checkout code') {
             steps {
-                checkout scm
+                checkout scm // 소스 코드 체크아웃
             }
         }
         stage('Build and push Docker image with Kaniko') {
             steps {
                 script {
-                    // YAML 파일을 사용하여 Kaniko Pod 생성
-                    sh 'kubectl apply -f kanikoo.yml -n product-ci'
-                    // Pod가 완료될 때까지 기다림
-                    sh "kubectl wait --for=condition=complete --namespace=product-ci pod/kaniko"
-                    // Pod 로그를 출력
-                    sh "kubectl logs --namespace=product-ci kaniko"
-                    // 사용이 끝난 후 Pod 제거
-                    sh "kubectl delete pod kaniko --namespace=product-ci"
+                    // Kubernetes 플러그인을 사용하여 Kaniko Pod 실행
+                    podTemplate(yaml: '''
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kaniko
+  namespace: product-ci
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    args:
+    - "--dockerfile=Dockerfile"
+    - "--context=git://github.com/seyoon12/product_ci_eks"
+    - "--destination=${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}"
+    env:
+    - name: GIT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: github
+          key: token
+    - name: GIT_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: github
+          key: username
+  restartPolicy: Never
+''') {
+                        // Pod가 완료될 때까지 기다립니다.
+                        container('kaniko') {
+                            // 빌드 및 푸시 프로세스 실행
+                            sh "kubectl wait --for=condition=complete --namespace=product-ci pod/kaniko --timeout=600s"
+                            sh "kubectl logs --namespace=product-ci kaniko"
+                            sh "kubectl delete pod kaniko --namespace=product-ci"
+                        }
+                    }
                 }
             }
+        }
+    }
+    post {
+        always {
+            // 파이프라인이 끝나면 Kaniko Pod를 정리합니다.
+            sh "kubectl delete pod kaniko --namespace=product-ci --ignore-not-found"
         }
     }
 }
