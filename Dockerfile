@@ -1,17 +1,34 @@
-# Dockerfile //hi
-FROM wordpress:latest
+#Dockerfile
+FROM ubuntu:20.04
 
-# Copy any custom configuration or plugins if necessary
-# COPY ./wp-content/ /var/www/html/wp-content/
+ENV Success "Build Success!"
 
-# Set environment variables
-ENV WORDPRESS_DB_HOST=db:3306
-ENV WORDPRESS_DB_USER=user
-ENV WORDPRESS_DB_PASSWORD=password
-ENV WORDPRESS_DB_NAME=wordpress
+RUN apt-get update && apt install -yq  tzdata \
+&& ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime \
+&& dpkg-reconfigure -f noninteractive tzdata
 
-# Expose port 80
+# 패키지 설치
+RUN apt-get install -y \
+apache2 \
+mariadb-client \
+php7.4 libapache2-mod-php7.4 php7.4-mysql  \
+wget \
+vim \
+net-tools \
+curl \
+zip
+
+COPY wwwroot.zip ./
+
+#Wordpress 설치 및 권한 설정
+RUN unzip wwwroot.zip \
+&& cp -r wwwroot/* /var/www/html/ \
+&& chown -R www-data:www-data /var/www/html \
+&& find /var/www/html/ -type d -exec chmod 755 {} \; \
+&& find /var/www/html/ -type f -exec chmod 644 {} \; \
+&& rm /var/www/html/index.html \
+&& echo $Success
+
+CMD ["apachectl", "-D", "FOREGROUND"]
+
 EXPOSE 80
-
-# When the container starts, WordPress will be running on port 80
-CMD ["apache2-foreground"]
