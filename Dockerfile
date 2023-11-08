@@ -20,7 +20,7 @@ zip
 
 #Wordpress 설치 및 권한 설정
 RUN wget https://seyoon.s3.ap-northeast-2.amazonaws.com/wwwroot.zip 
-&& unzip wwwroot.zip \
+RUN unzip wwwroot.zip \
 && cp -r wwwroot/* /var/www/html/ \
 && chown -R www-data:www-data /var/www/html \
 && find /var/www/html/ -type d -exec chmod 755 {} \; \
