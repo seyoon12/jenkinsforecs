@@ -6,7 +6,6 @@ pipeline {
         IMAGE_NAME = "product_ci"
     }
     stages {
-        stages {
       stage('Prepare') {
             steps {
                 script {
@@ -68,5 +67,4 @@ spec:
             }
         }
     }
-}
 }
