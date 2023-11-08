@@ -4,7 +4,6 @@ pipeline {
         // 환경 변수 설정
         ECR_REGISTRY = "535597585675.dkr.ecr.ap-northeast-2.amazonaws.com"
         IMAGE_NAME = "product_ci"
-        TAG = "latest"
     }
     stages {
       stage('Prepare') {
