@@ -4,21 +4,9 @@ pipeline {
         // 환경 변수 설정
         ECR_REGISTRY = "535597585675.dkr.ecr.ap-northeast-2.amazonaws.com"
         IMAGE_NAME = "product_ci"
+        TAG = "latest"
     }
     stages {
-      stage('Prepare') {
-            steps {
-                script {
-                    // Jenkins 빌드 번호를 사용하여 메이저 버전 생성
-                    def majorVersion = "${BUILD_NUMBER}"
-                    // 빌드 번호에 1.0, 2.0 같은 형식을 적용
-                    def semanticVersion = "${majorVersion}.0"
-                    
-                    // 이 버전을 환경 변수로 등록하여 다른 스테이지에서 사용할 수 있도록 합니다.
-                    env.TAG = semanticVersion
-                }
-            }
-        }
         stage('Checkout code') {
             steps {
                 checkout scm // 소스 코드 체크아웃
