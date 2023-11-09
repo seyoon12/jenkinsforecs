@@ -70,12 +70,9 @@ spec:
             steps {
                         // 다른 리포지토리를 클론합니다.
                         sh "git clone https://${GIT_USER}:${GIT_PASSWORD}@github.com/seyoon12/product_argocd.git"
-                        
-                        // 클론된 디렉토리 이름을 추정하거나 설정합니다.
-                        def repoName = 'product_argocd'
 
                         // 클론된 리포지토리 디렉토리로 이동합니다.
-                        dir(repoName) {
+                        dir('product-argocd') {
                             // deployment.yaml 파일에서 이미지 태그를 새로운 태그로 업데이트합니다.
                             sh """
                                 sed -i "s|${ECR_REGISTRY}/${IMAGE_NAME}:.*|${ECR_REGISTRY}/${IMAGE_NAME}:${NEW_IMAGE_TAG}|g" deployment.yaml
