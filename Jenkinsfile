@@ -85,6 +85,13 @@ spec:
                 }
             }
         }
+        stage('Set Git User Info') {
+    steps {
+        sh "git config --global user.email 'wntpqhd1326@gmail.com'"
+        sh "git config --global user.name 'seyoon12'"
+    }
+}
+
         stage('Deploy argocd') {
     steps {
         script {
