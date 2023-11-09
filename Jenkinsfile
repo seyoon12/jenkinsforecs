@@ -86,18 +86,25 @@ spec:
             }
         }
         stage('deploy argocd') {
-            steps {
-                        // 다른 리포지토리를 클론합니다.
-                        sh "git clone https://${GIT_USER}:${GIT_PASSWORD}@github.com/seyoon12/product_argocd.git"
-                        // 클론한 리포지토리 디렉토리로 이동합니다.
-                        dir('product_argocd') {
-                        // deployment.yaml 파일에서 이미지 태그를 새로운 태그로 업데이트합니다.
-                        sh """
-                            sed -i "s|${ECR_REGISTRY}/${IMAGE_NAME}:.*|${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}|g" deployment.yaml
-                            git add deployment.yaml
-                            git commit -m "Update image tag to ${env.TAG}"
-                            git push origin HEAD:master
-                        """
+             steps {
+        // 클론할 디렉토리 이름 설정
+        def repoDirectory = 'product_argocd'
+
+        // 만약 디렉토리가 이미 존재한다면 삭제
+        sh "rm -rf ${repoDirectory}"
+
+        // 다른 리포지토리를 클론합니다.
+        sh "git clone https://${GIT_USER}:${GIT_PASSWORD}@github.com/seyoon12/product_argocd.git ${repoDirectory}"
+
+        // 클론한 리포지토리 디렉토리로 이동합니다.
+        dir(repoDirectory) {
+            // deployment.yaml 파일에서 이미지 태그를 새로운 태그로 업데이트합니다.
+            sh """
+                sed -i "s|${ECR_REGISTRY}/${IMAGE_NAME}:.*|${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}|g" deployment.yaml
+                git add deployment.yaml
+                git commit -m "Update image tag to ${env.TAG}"
+                git push origin HEAD:master
+            """
         }
     }
 }
