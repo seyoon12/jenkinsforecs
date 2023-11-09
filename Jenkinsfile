@@ -111,7 +111,7 @@ spec:
                     sed -i "s|${ECR_REGISTRY}/${IMAGE_NAME}:.*|${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}|g" deployment.yml
                     git add deployment.yml
                     git commit -m "Update image tag to ${env.TAG}"
-                    git push origin HEAD:master
+                    git push origin HEAD:main
                 """
             }
         }
