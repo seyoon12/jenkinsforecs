@@ -66,13 +66,32 @@ spec:
                 }
             }
         }
+        stage('Get Kubernetes Secret') {
+            steps {
+                script {
+                    // Kubernetes 시크릿 값을 가져와서 환경 변수로 설정
+                    def gitUser = sh (
+                        script: "kubectl get secret argocd -n product-ci -o jsonpath='{.data.GIT_USER}' | base64 --decode",
+                        returnStdout: true
+                    ).trim()
+                    def gitPassword = sh (
+                        script: "kubectl get secret argocd -n product-ci -o jsonpath='{.data.GIT_PASSWORD}' | base64 --decode",
+                        returnStdout: true
+                    ).trim()
+                    
+                    // 가져온 값은 환경 변수로 설정
+                    env.GIT_USER = GIT_USER
+                    env.GIT_PASSWORD = GIT_PASSWORD
+                }
+            }
+        }
         stage('deploy argocd') {
             steps {
                         // 다른 리포지토리를 클론합니다.
                         sh "git clone https://${GIT_USER}:${GIT_PASSWORD}@github.com/seyoon12/product_argocd.git"
 
                         // 클론된 리포지토리 디렉토리로 이동합니다.
-                        dir('product-argocd') {
+                        dir('product_argocd') {
                             // deployment.yaml 파일에서 이미지 태그를 새로운 태그로 업데이트합니다.
                             sh """
                                 sed -i "s|${ECR_REGISTRY}/${IMAGE_NAME}:.*|${ECR_REGISTRY}/${IMAGE_NAME}:${NEW_IMAGE_TAG}|g" deployment.yaml
