@@ -103,6 +103,9 @@ spec:
             
             // 클론한 리포지토리 디렉토리로 이동합니다.
             dir(repoDirectory) {
+                // 원격 저장소에서 최신 변경사항을 가져옵니다.
+                sh "git checkout master"
+                sh "git pull origin master"
                 // deployment.yml 파일에서 이미지 태그를 새로운 태그로 업데이트합니다.
                 sh """
                     sed -i "s|${ECR_REGISTRY}/${IMAGE_NAME}:.*|${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}|g" deployment.yml
