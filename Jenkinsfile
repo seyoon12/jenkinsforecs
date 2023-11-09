@@ -106,7 +106,7 @@ spec:
                 // deployment.yml 파일에서 이미지 태그를 새로운 태그로 업데이트합니다.
                 sh """
                     sed -i "s|${ECR_REGISTRY}/${IMAGE_NAME}:.*|${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}|g" deployment.yml
-                    git add ${repoDirectory}/deployment.yml
+                    git add deployment.yml
                     git commit -m "Update image tag to ${env.TAG}"
                     git push origin HEAD:master
                 """
