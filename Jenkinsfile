@@ -89,6 +89,7 @@ spec:
     steps {
         script {
             def repoDirectory = 'product_argocd'
+            sh "rm -rf ${repoDirectory}"
             
             // 다른 리포지토리를 클론합니다.
             sh "git clone https://${GIT_USER}:${GIT_PASSWORD}@github.com/seyoon12/product_argocd.git ${repoDirectory}"
