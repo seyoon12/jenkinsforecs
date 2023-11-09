@@ -68,7 +68,6 @@ spec:
         }
         stage('deploy argocd') {
             steps {
-                // 다른 리포지토리에 대한 자격 증명 설정 {
                         // 다른 리포지토리를 클론합니다.
                         sh "git clone https://${GIT_USER}:${GIT_PASSWORD}@github.com/seyoon12/product_argocd.git"
                         
@@ -89,4 +88,3 @@ spec:
       }
     } 
   }
-}
