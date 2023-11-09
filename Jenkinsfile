@@ -70,10 +70,10 @@ spec:
             steps {
                 // 다른 리포지토리에 대한 자격 증명 설정 {
                         // 다른 리포지토리를 클론합니다.
-                        sh "git clone https://${GIT_USER}:${GIT_PASSWORD}@${OTHER_REPO_URL}"
+                        sh "git clone https://${GIT_USER}:${GIT_PASSWORD}@github.com/seyoon12/product_argocd.git"
                         
                         // 클론된 디렉토리 이름을 추정하거나 설정합니다.
-                        def repoName = https://github.com/seyoon12/product_argocd.split('/')[-1].replace('.git', '')
+                        def repoName = 'product_argocd'
 
                         // 클론된 리포지토리 디렉토리로 이동합니다.
                         dir(repoName) {
@@ -86,4 +86,4 @@ spec:
                             """
             }
     }
-}
+}}}}
