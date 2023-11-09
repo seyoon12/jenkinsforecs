@@ -94,7 +94,7 @@ spec:
                         dir('product_argocd') {
                             // deployment.yaml 파일에서 이미지 태그를 새로운 태그로 업데이트합니다.
                             sh """
-                                sed -i "s|${ECR_REGISTRY}/${IMAGE_NAME}:.*|${ECR_REGISTRY}/${IMAGE_NAME}:${NEW_IMAGE_TAG}|g" deployment.yaml
+                                sed -i "s|${ECR_REGISTRY}/${IMAGE_NAME}:.*|${ECR_REGISTRY}/${IMAGE_NAME}:${TAG}|g" deployment.yaml
                                 git add deployment.yaml
                                 git commit -m "Update image tag to ${env.TAG}"
                                 git push origin HEAD:master
