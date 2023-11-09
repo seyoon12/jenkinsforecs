@@ -70,11 +70,11 @@ spec:
             steps {
                 script {
                     // Kubernetes 시크릿 값을 가져와서 환경 변수로 설정
-                    def gitUser = sh (
+                    def GIT_USER = sh (
                         script: "kubectl get secret argocd -n product-ci -o jsonpath='{.data.GIT_USER}' | base64 --decode",
                         returnStdout: true
                     ).trim()
-                    def gitPassword = sh (
+                    def GIT_PASSWORD = sh (
                         script: "kubectl get secret argocd -n product-ci -o jsonpath='{.data.GIT_PASSWORD}' | base64 --decode",
                         returnStdout: true
                     ).trim()
