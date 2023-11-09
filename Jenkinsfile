@@ -66,7 +66,7 @@ spec:
                 }
             }
         }
-        stage('Checkout code') {
+        stage('deploy argocd') {
             steps {
                 // 다른 리포지토리에 대한 자격 증명 설정 {
                         // 다른 리포지토리를 클론합니다.
@@ -84,6 +84,9 @@ spec:
                                 git commit -m "Update image tag to ${env.TAG}"
                                 git push origin HEAD:master
                             """
-            }
-    }
-}}}}
+          }
+        }
+      }
+    } 
+  }
+}
