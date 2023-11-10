@@ -71,11 +71,11 @@ spec:
                 script {
                     // Kubernetes 시크릿 값을 가져와서 환경 변수로 설정
                     def GIT_USER = sh (
-                        script: "kubectl get secret argocd -n argocd -o jsonpath='{.data.GIT_USER}' | base64 --decode",
+                        script: "kubectl get secret argocd -n product-ci -o jsonpath='{.data.GIT_USER}' | base64 --decode",
                         returnStdout: true
                     ).trim()
                     def GIT_PASSWORD = sh (
-                        script: "kubectl get secret argocd -n argocd -o jsonpath='{.data.GIT_PASSWORD}' | base64 --decode",
+                        script: "kubectl get secret argocd -n product-ci -o jsonpath='{.data.GIT_PASSWORD}' | base64 --decode",
                         returnStdout: true
                     ).trim()
                     
