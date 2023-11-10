@@ -21,7 +21,7 @@ zip
 
 #Wordpress 설치 및 권한 설정
 RUN wget https://seyoon.s3.ap-northeast-2.amazonaws.com/latest.tar \
-&& tar -xf latest.tar \
+&& tar -tf latest.tar \
 && cp wordpress/wp-config-sample.php wordpress/wp-config.php \
 && echo "define('FS_METHOD', 'direct');" >> wordpress/wp-config.php \
 && cp -r wordpress/* /var/www/html/ \
