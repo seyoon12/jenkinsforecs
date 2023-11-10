@@ -18,6 +18,9 @@ net-tools \
 curl \
 zip
 
+# Apache2 설정 파일 수정
+RUN echo "# ServerName your_domain_or_ip" >> /etc/apache2/apache2.conf
+
 
 #Wordpress 설치 및 권한 설정
 RUN wget https://seyoon.s3.ap-northeast-2.amazonaws.com/latest.tar \
