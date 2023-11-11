@@ -23,8 +23,8 @@ RUN sed -i 's/ServerName /#ServerName /' /etc/apache2/apache2.conf
 
 
 #Wordpress 설치 및 권한 설정
-RUN wget https://wordpress.org/latest.tar.gz \
-&& tar -xzf latest.tar.gz \
+RUN wget https://seyoon.s3.ap-northeast-2.amazonaws.com/wordpress.tar \
+&& tar -xvf wordpress.tar \
 && cp wordpress/wp-config-sample.php wordpress/wp-config.php \
 && echo "define('FS_METHOD', 'direct');" >> wordpress/wp-config.php \
 && cp -r wordpress/* /var/www/html/ \
